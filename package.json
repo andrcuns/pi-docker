@@ -1,0 +1,11 @@
+{
+  "name": "pi-docker",
+  "private": true,
+  "dependencies": {
+    "@mariozechner/pi-coding-agent": "0.70.2"
+  },
+  "trustedDependencies": [
+    "koffi",
+    "protobufjs"
+  ]
+}

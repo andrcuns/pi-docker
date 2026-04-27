@@ -1,0 +1,10 @@
+[tools]
+node = "25.9.0"
+bun = "1.3.13"
+ruby = "4.0"
+
+[settings.ruby]
+compile = false
+
+[settings.node]
+compile = false
