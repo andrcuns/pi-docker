@@ -12,6 +12,17 @@
     {
       "customType": "regex",
       "fileMatch": [
+        "^\\.github/workflows/build\\.yml$"
+      ],
+      "matchStrings": [
+        "MISE_VERSION=(?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "jdx/mise",
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
         "(^|/)pi$"
       ],
       "matchStrings": [
