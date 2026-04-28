@@ -29,6 +29,7 @@ RUN apk add --no-cache \
   gnupg
 
 # Install mise
+ARG MISE_VERSION
 RUN curl https://mise.run | sh
 
 # Copy mise.toml configuration file
