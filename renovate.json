@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "automerge": true,
+  "enabledManagers": [
+    "regex",
+    "npm",
+    "mise",
+    "dockerfile",
+    "github-actions"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/)pi$"
+      ],
+      "matchStrings": [
+        "ghcr\\.io/andrcuns/pi-docker:(?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "@mariozechner/pi-coding-agent",
+      "datasourceTemplate": "npm"
+    }
+  ],
+  "packageRules": [
+    {
+      "groupName": "pi coding agent",
+      "matchManagers": [
+        "npm",
+        "regex"
+      ],
+      "matchPackageNames": [
+        "@mariozechner/pi-coding-agent"
+      ]
+    }
+  ]
+}

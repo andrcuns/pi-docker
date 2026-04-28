@@ -8,11 +8,13 @@ exec docker run --rm -it \
   --user $(id -u):$(id -g) \
   -e "MISE_CEILING_PATHS=$MOUNTED_DIR" \
   -e "HOME=$PI_HOME" \
-  -v "packages:/pi-home/.pi/packages" \
+  -v "pi-packages:/pi-home/.pi/packages" \
+  -v "pi-sessions:/pi-home/.pi/agent/sessions" \
+  -v "$HOME/.pi/agent/auth.json:$PI_HOME/.pi/agent/auth.json" \
+  -v "$HOME/.pi/agent/settings.json:$PI_HOME/.pi/agent/settings.json" \
   -v "$HOME/.agents:$PI_HOME/.agents" \
-  -v "$HOME/.pi/agent:$PI_HOME/.pi/agent" \
   -v "$HOME/.gitconfig:$PI_HOME/.gitconfig:ro" \
   -v "$HOME/.gitignore_global:$PI_HOME/.gitignore_global:ro" \
   -v "$REAL_PWD:$MOUNTED_DIR" \
   -w "$MOUNTED_DIR" \
-  pi-docker:latest
+  ghcr.io/andrcuns/pi-docker:0.70.2
