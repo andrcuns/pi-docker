@@ -10,11 +10,11 @@ ENV MISE_DATA_DIR="${PI_HOME}/.local/share/mise" \
 
 # set global tool paths so that tooling can be persisted across sessions
 ENV NPM_CONFIG_PREFIX=${PI_DIR}/packages/npm \
-  BUN_INSTALL=${PI_HOME}/packages/bun \
+  BUN_INSTALL=${PI_DIR}/packages/bun \
   GEM_HOME=${PI_DIR}/packages/gems \
   PYTHONUSERBASE=${PI_DIR}/packages/python
 
-ENV PATH="/home/pi/.local/bin:${MISE_DATA_DIR}/shims:$PATH"
+ENV PATH="${PI_HOME}/.local/bin:${PI_DIR}/node_modules/.bin:${MISE_DATA_DIR}/shims:$PATH"
 
 # Create user with UID and GID
 ARG UID=1000
