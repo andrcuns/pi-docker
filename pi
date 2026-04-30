@@ -2,11 +2,9 @@
 
 REAL_PWD="$(realpath "$PWD")"
 MOUNTED_DIR="/${REAL_PWD##*/}"
-PI_HOME="/pi-home"
+PI_HOME="/home/pi"
 
 mkdir -p "$HOME/.pi/agent"
-[[ -e "$HOME/.pi/agent/auth.json" ]] || touch "$HOME/.pi/agent/auth.json"
-[[ -e "$HOME/.pi/agent/settings.json" ]] || touch "$HOME/.pi/agent/settings.json"
 
 HAS_P_FLAG=false
 for arg in "$@"; do
@@ -28,16 +26,13 @@ DOCKER_ARGS=(
   --init
   "${TTY_FLAGS[@]}"
   --user "$(id -u):$(id -g)"
-  -e "HOME=$PI_HOME"
   -e "TERM=${TERM:-xterm-256color}"
   -e "LANG=${LANG:-en_US.UTF-8}"
-  -v "pi-packages:/pi-home/.pi/packages"
-  -v "pi-sessions:/pi-home/.pi/agent/sessions"
-  -v "$HOME/.pi/agent/auth.json:$PI_HOME/.pi/agent/auth.json"
-  -v "$HOME/.pi/agent/settings.json:$PI_HOME/.pi/agent/settings.json"
   -v "$HOME/.agents:$PI_HOME/.agents"
   -v "$HOME/.gitconfig:$PI_HOME/.gitconfig:ro"
   -v "$HOME/.gitignore_global:$PI_HOME/.gitignore_global:ro"
+  -v "$HOME/.pi/agent:$PI_HOME/.pi/agent"
+  -v "pi-packages:$PI_HOME/.pi/packages"
 )
 
 [[ -n "$LC_ALL" ]] && DOCKER_ARGS+=(-e "LC_ALL=$LC_ALL")
@@ -57,7 +52,7 @@ fi
 DOCKER_ARGS+=(
   -e "MISE_CEILING_PATHS=$MOUNTED_DIR"
   -w "$MOUNTED_DIR"
-  "ghcr.io/andrcuns/pi-docker:0.70.5"
+  "ghcr.io/andrcuns/pi-docker:0.70.6"
 )
 
 exec docker run "${DOCKER_ARGS[@]}" "$@"

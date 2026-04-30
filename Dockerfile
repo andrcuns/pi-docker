@@ -1,47 +1,57 @@
-FROM alpine:3.23.4
+FROM debian:13.4-slim
 
-ENV MISE_DATA_DIR="/mise" \
-  MISE_CONFIG_DIR="/mise" \
-  MISE_CACHE_DIR="/mise/cache" \
-  MISE_INSTALL_PATH="/usr/local/bin/mise" \
-  PI_HOME="/pi-home" \
-  PI_DIR="/pi-home/.pi" \
+ENV PI_HOME="/home/pi" \
+  PI_DIR="/home/pi/.pi" \
   PI_SKIP_VERSION_CHECK="true"
 
-ENV NPM_CONFIG_PREFIX=$PI_HOME/.pi/packages
+ENV MISE_DATA_DIR="${PI_HOME}/.local/share/mise" \
+  MISE_CONFIG_DIR="${PI_HOME}/.config/mise" \
+  MISE_CACHE_DIR="${PI_HOME}/.cache/mise"
 
-ENV PATH="/mise/shims:$NPM_CONFIG_PREFIX/bin:$PI_DIR/node_modules/.bin:$PATH"
+# set global tool paths so that tooling can be persisted across sessions
+ENV NPM_CONFIG_PREFIX=${PI_DIR}/packages/npm \
+  BUN_INSTALL=${PI_HOME}/packages/bun \
+  GEM_HOME=${PI_DIR}/packages/gems \
+  PYTHONUSERBASE=${PI_DIR}/packages/python
+
+ENV PATH="/home/pi/.local/bin:${MISE_DATA_DIR}/shims:$PATH"
+
+# Create user with UID and GID
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g ${GID} pi && useradd -m -u ${UID} -g ${GID} pi && chown -R ${UID}:${GID} ${PI_HOME}
 
 # add world readable and writeable directory for user to be able to install packages and persist sessions
-RUN mkdir -p ${PI_DIR}/agent/sessions ${PI_DIR}/packages \
-  && chmod -R 1777 ${PI_HOME}
+RUN set -e; \
+  mkdir -p ${PI_DIR}/agent ${PI_DIR}/packages \
+  && chown -R pi:pi ${PI_DIR} ${PI_DIR}/packages ${PI_DIR}/agent
 
 # install packages
-RUN apk add --no-cache \
-  bash \
+RUN apt-get update  \
+  && apt-get -y --no-install-recommends install  \
   curl \
   git \
   ca-certificates \
-  build-base \
-  fd \
+  build-essential \
   ripgrep \
-  python3 \
-  gnupg
+  fd-find \
+  && rm -rf /var/lib/apt/lists/*
 
-# Install mise
+USER pi
+WORKDIR ${PI_DIR}
+
+# install mise
 ARG MISE_VERSION
 RUN curl https://mise.run | sh
 
-# Copy mise.toml configuration file
-COPY mise.toml /mise/mise.toml
+# copy mise.toml configuration file
+COPY mise.toml ${MISE_CONFIG_DIR}/mise.toml
 
-# Pre-install tools
+# pre-install tools
 RUN mise install
 
-WORKDIR $PI_HOME/.pi
+# install pi harness
+COPY --chown=pi:pi package.json ${PI_DIR}/package.json
+RUN bun install --no-cache --no-save --unhandled-rejections=strict
 
-# Install pi
-COPY package.json ./
-RUN bun install --no-save --no-cache --production
-
-ENTRYPOINT [ "/pi-home/.pi/node_modules/.bin/pi" ]
+ENTRYPOINT [ "/home/pi/.pi/node_modules/.bin/pi" ]
