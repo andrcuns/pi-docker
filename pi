@@ -3,8 +3,9 @@
 REAL_PWD="$(realpath "$PWD")"
 MOUNTED_DIR="/${REAL_PWD##*/}"
 PI_HOME="/home/pi"
+DPI_HOME="$HOME/.dpi/agent"
 
-mkdir -p "$HOME/.pi/agent"
+mkdir -p "$DPI_HOME"
 
 HAS_P_FLAG=false
 for arg in "$@"; do
@@ -31,7 +32,7 @@ DOCKER_ARGS=(
   -v "$HOME/.agents:$PI_HOME/.agents"
   -v "$HOME/.gitconfig:$PI_HOME/.gitconfig:ro"
   -v "$HOME/.gitignore_global:$PI_HOME/.gitignore_global:ro"
-  -v "$HOME/.pi/agent:$PI_HOME/.pi/agent"
+  -v "$DPI_HOME:$PI_HOME/.pi/agent"
   -v "pi-packages:$PI_HOME/.pi/packages"
 )
 
