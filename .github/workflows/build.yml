@@ -47,7 +47,7 @@ jobs:
           load: ${{ github.event_name == 'pull_request' }}
           tags: ghcr.io/andrcuns/pi-docker:${{ steps.version.outputs.tag }}
           build-args: |
-            MISE_VERSION=v2026.4.28
+            MISE_VERSION=v2026.5.0
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
